@@ -6,7 +6,7 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
-    command: redis-server --maxmemory 200mb --maxmemory-policy allkeys-lru
+    command: redis-server --maxmemory ${REDIS_MAXMEMORY:-200mb} --maxmemory-policy ${REDIS_POLICY:-allkeys-lru}
 
   generador_respuestas:
     build: ./generador_respuestas
@@ -28,6 +28,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - GENERADOR_URL=http://generador_respuestas:8001
+      - TTL_SEGUNDOS=${TTL_SEGUNDOS:-60}
 
   almacenamiento_metricas:
     build: ./almacenamiento_metricas
@@ -44,3 +45,6 @@ services:
     environment:
       - CACHE_URL=http://servicio_cache:8002
       - METRICAS_URL=http://almacenamiento_metricas:8003
+      - DISTRIBUCION=${DISTRIBUCION:-zipf}
+      - TOTAL_CONSULTAS=${TOTAL_CONSULTAS:-1000}
+      - INTERVALO_SEGUNDOS=${INTERVALO_SEGUNDOS:-0.1}
